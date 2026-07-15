@@ -16,7 +16,7 @@ import { LoginUserDto } from '../auth/dto/loginUser.dto';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async createUser(registerUserDto: RegisterUserDto) {
+  async register(registerUserDto: RegisterUserDto) {
     type MongoDuplicateKeyError = {
       code?: number;
       keyValue?: { email?: string };
@@ -38,7 +38,7 @@ export class UserService {
     }
   }
 
-  async loginUser(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto) {
     const user = await this.userModel
       .findOne({ email: loginUserDto.email })
       .select('+password');
@@ -57,5 +57,9 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async getProfile(id: string) {
+    return await this.userModel.findById(id);
   }
 }

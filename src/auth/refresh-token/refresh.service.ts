@@ -24,12 +24,12 @@ export class RefreshTokenService {
     const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
     await this.refreshTokenModel.create({
-      hashedToken: hashedToken,
+      token: hashedToken,
       userId,
       expiresAt,
     });
 
-    return rawToken; // raw token leaves the service; hash stays in DB
+    return rawToken;
   }
 
   async validateAndRotate(rawToken: string): Promise<Types.ObjectId> {

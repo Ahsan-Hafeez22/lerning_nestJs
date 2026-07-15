@@ -21,30 +21,29 @@ export class AuthService {
   }
 
   async register(registerUserDto: RegisterUserDto) {
-    const user = await this.userService.createUser(registerUserDto);
-
+    const user = await this.userService.register(registerUserDto);
     const accessToken = await this.generateAccessToken(user.id);
     const refreshToken = await this.refreshTokenService.createToken(user._id);
-
     return { user: user, accessToken, refreshToken };
   }
 
   async login(loginUserDto: LoginUserDto) {
-    const user = await this.userService.loginUser(loginUserDto);
-
+    const user = await this.userService.login(loginUserDto);
     const accessToken = await this.generateAccessToken(user.id);
     const refreshToken = await this.refreshTokenService.createToken(user._id);
-
     return { user: user, accessToken, refreshToken };
+  }
+
+  async getProfile(id: string) {
+    const user = await this.userService.getProfile(id);
+    return user;
   }
 
   async refresh(oldRefreshToken: string) {
     const userId =
       await this.refreshTokenService.validateAndRotate(oldRefreshToken);
-
     const accessToken = await this.generateAccessToken(userId.toString());
     const refreshToken = await this.refreshTokenService.createToken(userId);
-
     return { accessToken, refreshToken };
   }
 
