@@ -22,6 +22,10 @@ export class AuthService {
       ...registerUserDto,
       password: hash,
     });
+    const payload = { sub: user.id };
+    // console.log(process.env.JWT_ACCESS_SECRET);
+    const token = await this.jwtService.signAsync(payload);
+    console.log('Token: ', token);
     return user;
   }
 }
