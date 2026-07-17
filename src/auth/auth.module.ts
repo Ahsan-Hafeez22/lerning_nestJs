@@ -10,6 +10,7 @@ import {
   RefreshTokenSchema,
 } from './refresh-token/schemas/refreshToken.schema';
 import { RefreshTokenService } from './refresh-token/refresh.service';
+import { AuthGuard } from './auth.guard';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { RefreshTokenService } from './refresh-token/refresh.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, RefreshTokenService],
+  providers: [AuthService, RefreshTokenService, AuthGuard],
+  exports: [JwtModule, AuthGuard],
 })
 export class AuthModule {}

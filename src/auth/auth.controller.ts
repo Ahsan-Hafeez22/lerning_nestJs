@@ -32,6 +32,8 @@ export class AuthController {
   async getProfile(@Request() req: Request & { user: { sub: string } }) {
     return this.authService.getProfile(req.user.sub);
   }
+
+  @UseGuards(AuthGuard)
   @Post('refresh')
   async refresh(@Body() dto: RefreshTokenDto) {
     if (!dto.refreshToken) {
