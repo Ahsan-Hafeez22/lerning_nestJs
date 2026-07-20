@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { CourseLevel } from '../couse.types';
 
 export type CourseDocument = HydratedDocument<Course>;
@@ -17,6 +17,9 @@ export class Course {
 
   @Prop({ default: CourseLevel.BEGINNER })
   level: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  createdBy: Types.ObjectId;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

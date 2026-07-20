@@ -4,6 +4,7 @@ import { RegisterUserDto } from './dto/registerUser.dto';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from './refresh-token/refresh.service';
+import { Role } from '../user/user.types';
 
 @Injectable()
 export class AuthService {
@@ -13,23 +14,23 @@ export class AuthService {
     private refreshTokenService: RefreshTokenService,
   ) {}
 
-  private async generateAccessToken(userId: string) {
+  private async generateAccessToken(userId: string, userRole: Role) {
     return this.jwtService.signAsync(
-      { sub: userId },
+      { sub: userId, role: userRole },
       { secret: process.env.JWT_ACCESS_SECRET, expiresIn: '15m' },
     );
   }
 
   async register(registerUserDto: RegisterUserDto) {
     const user = await this.userService.register(registerUserDto);
-    const accessToken = await this.generateAccessToken(user.id);
+    const accessToken = await this.generateAccessToken(user.id, user.role);
     const refreshToken = await this.refreshTokenService.createToken(user._id);
     return { user: user, accessToken, refreshToken };
   }
 
   async login(loginUserDto: LoginUserDto) {
     const user = await this.userService.login(loginUserDto);
-    const accessToken = await this.generateAccessToken(user.id);
+    const accessToken = await this.generateAccessToken(user.id, user.role);
     const refreshToken = await this.refreshTokenService.createToken(user._id);
     return { user: user, accessToken, refreshToken };
   }
@@ -42,8 +43,13 @@ export class AuthService {
   async refresh(oldRefreshToken: string) {
     const userId =
       await this.refreshTokenService.validateAndRotate(oldRefreshToken);
-    const accessToken = await this.generateAccessToken(userId.toString());
+    let accessToken;
+    const user = await this.userService.getProfile(userId.toString());
+    if (user != null) {
+      accessToken = await this.generateAccessToken(user.id, user.role);
+    }
     const refreshToken = await this.refreshTokenService.createToken(userId);
+
     return { accessToken, refreshToken };
   }
 

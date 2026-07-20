@@ -6,11 +6,12 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Role } from '../user/user.types';
 
 interface JwtPayload {
   sub: string;
   email?: string;
-  role?: string;
+  role?: Role;
   iat?: number;
   exp?: number;
 }
